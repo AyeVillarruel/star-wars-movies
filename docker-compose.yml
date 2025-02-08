@@ -1,0 +1,41 @@
+services:
+  mysql_dev:
+    image: mysql:8
+    container_name: mysql_dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: star_wars_movies
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - app_network
+
+  nestjs_app:
+    build: .
+    container_name: nestjs_app
+    restart: always
+    env_file:
+      - .env 
+    environment:
+      DATABASE_HOST: mysql_dev
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: star_wars_movies
+      JWT_SECRET: ${JWT_SECRET}  
+    depends_on:
+      - mysql_dev
+    networks:
+      - app_network
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules 
+    command: ["npm", "run", "start:dev"]
+
+networks:
+  app_network:
+    driver: bridge

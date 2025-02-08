@@ -1,0 +1,15 @@
+# Node.js dependencies
+node_modules/
+dist/
+coverage/
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.log
+.npm
+.yarn
+# Docker files
+docker-compose.override.yml
+*.pid
