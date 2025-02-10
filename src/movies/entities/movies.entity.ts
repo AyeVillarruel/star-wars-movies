@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { UserMovie } from './user_movies.entity';
+import { Planet } from './planet.entity';
+import { Character } from './character.entity';
+import { Starship } from './starship.entity';
+import { Vehicle } from './vehicle.entity';
+import { Species } from './Species.entity';
 
 @Entity('movies')
 export class Movie {
@@ -26,6 +31,26 @@ export class Movie {
   @Column({ nullable: true })
   @ApiProperty({ description: 'movie producer', example: 'Star Wars' })
   producer: string;
+  
+  @ManyToMany(() => Character, (character) => character.movies, { cascade: true })
+  @JoinTable()
+  characters: Character[];
+
+  @ManyToMany(() => Planet, (planet) => planet.movies, { cascade: true })
+  @JoinTable()
+  planets: Planet[];
+
+  @ManyToMany(() => Starship, (starship) => starship.movies, { cascade: true })
+  @JoinTable()
+  starships: Starship[];
+
+  @ManyToMany(() => Vehicle, (vehicle) => vehicle.movies, { cascade: true })
+  @JoinTable()
+  vehicles: Vehicle[];
+
+  @ManyToMany(() => Species, (species) => species.movies, { cascade: true })
+  @JoinTable()
+  species: Species[]
 
   @OneToMany(() => UserMovie, (userMovie) => userMovie.movie)
   movieUsers: UserMovie[];

@@ -56,7 +56,7 @@ async getUserFavorites(@Request() req) {
   @Post()
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles('ADMIN')
-  @ApiOperation({ summary: 'create a new movie' })
+  @ApiOperation({ summary: 'create a new movie- ONLY ADMIN' })
   @ApiResponse({ status: 201, description: 'the movie has been successfully created.' })
   @ApiResponse({ status: 403, description: 'Access denied. You do not have the required role.' })
   @ApiResponse({ status: 401, description: 'You are not authorized. Please log in.' })
@@ -77,7 +77,7 @@ async getUserFavorites(@Request() req) {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a movie by ID' })
+  @ApiOperation({ summary: 'Update a movie by ID - ONLY ADMIN' })
   @ApiResponse({ status: 200, description: 'The movie has been successfully updated.' })
   @ApiResponse({ status: 403, description: 'Access denied. You do not have the required role.' })
 @ApiResponse({ status: 401, description: 'You are not authorized. Please log in.' })
@@ -95,7 +95,7 @@ async getUserFavorites(@Request() req) {
   } 
   
 @Delete(':id')
-@ApiOperation({ summary: 'Delete a movie by ID' })
+@ApiOperation({ summary: 'Delete a movie by ID - ONLY ADMIN' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN') 
 @ApiResponse({ status: 200, description: 'The movie has been successfully deleted.' })

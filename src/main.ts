@@ -52,10 +52,6 @@ async function bootstrap() {
   });
 
 
-
-/*    const syncMoviesCron = app.get(SyncMoviesCron);
-  await syncMoviesCron.syncMovies();  */
-
   await app.listen(3000);
 }
 

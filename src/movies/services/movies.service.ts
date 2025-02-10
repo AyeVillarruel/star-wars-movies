@@ -24,14 +24,17 @@ export class MoviesService {
   }
 
   async findById(id: number): Promise<Movie> {
-    const movie = await this.moviesRepository.findOne({ where: { id } });
-
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['characters', 'planets', 'starships', 'vehicles', 'species'], 
+    });
+  
     if (!movie) {
-        throw new NotFoundException(`Movie with ID ${id} not found`);
+      throw new NotFoundException(`Movie with ID ${id} not found`);
     }
-
+  
     return movie;
-}
+  }
 
 
   async create(createMovieDto: CreateMovieDto): Promise<Movie> {
