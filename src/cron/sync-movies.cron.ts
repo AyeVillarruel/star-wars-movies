@@ -28,70 +28,91 @@ export class SyncMoviesCron implements OnModuleInit {
     await this.syncMovies();
   }
 
-  @Cron('0 0 * * *') // Se ejecuta automáticamente cada medianoche
-  async syncMovies() {
-    console.log('Sincronizando películas desde la API de Star Wars...');
-
+  private async fetchEntityData(url: string): Promise<{ name: string; url: string }> {
     try {
-      const response = await axios.get('https://swapi.dev/api/films/');
-      const movies = response.data.results;
-
-      for (const movieData of movies) {
-        let movie = await this.moviesRepository.findOne({ where: { title: movieData.title }, relations: ["characters", "planets", "starships", "vehicles", "species"] });
-
-        if (!movie) {
-          movie = this.moviesRepository.create({
-            title: movieData.title,
-            description: movieData.opening_crawl,
-            releaseDate: movieData.release_date,
-            director: movieData.director,
-            producer: movieData.producer,
-          });
-        }
-
-        movie.characters = await this.getOrCreateEntities(this.charactersRepository, movieData.characters);
-        movie.planets = await this.getOrCreateEntities(this.planetsRepository, movieData.planets);
-        movie.starships = await this.getOrCreateEntities(this.starshipsRepository, movieData.starships);
-        movie.vehicles = await this.getOrCreateEntities(this.vehiclesRepository, movieData.vehicles);
-        movie.species = await this.getOrCreateEntities(this.speciesRepository, movieData.species);
-
-        await this.moviesRepository.save(movie);
-        console.log(`Película sincronizada: ${movie.title}`);
-      }
-
-      console.log('Sincronización de películas completada.');
+      const response = await axios.get(url);
+      return { name: response.data.name, url: response.data.url };
     } catch (error) {
-      console.error('Error en la sincronización:', error.message);
+      console.error(`❌ Error obteniendo datos de ${url}:`, error.message);
+      return { name: 'Unknown', url }; // Si la API falla, devolvemos 'Unknown'
     }
   }
 
-  private async getOrCreateEntities<T extends { name: string; url: string }>(
-    repository: Repository<T>,
+  private async syncRelatedEntities<T extends { name: string; url: string }>(
+    entityRepository: Repository<T>,
     urls: string[]
   ): Promise<T[]> {
     const entities: T[] = [];
-  
+
     for (const url of urls) {
-      let existingEntity = await repository.findOne({ where: { url } as FindOptionsWhere<T> });
-  
+      let existingEntity = await entityRepository.findOne({ where: { url } as FindOptionsWhere<T> });
+
       if (!existingEntity) {
-        try {
-          const response = await axios.get(url);
-          const entityName = response.data.name;
-          existingEntity = repository.create({ name: entityName, url } as DeepPartial<T>);
-          await repository.save(existingEntity);
-        }
-        catch (error) {
-          console.error(`Error al obtener los datos de  ${url}:`, error.message);
-          continue;
-        }
+        const entityData = await this.fetchEntityData(url); 
+
+        existingEntity = entityRepository.create({
+          name: entityData.name, 
+          url: entityData.url,
+        } as T);
+
+        await entityRepository.save(existingEntity);
+        console.log(`Guardado: ${entityData.name}`);
       }
-  
+
       entities.push(existingEntity);
     }
-  
+
     return entities;
   }
+
+  @Cron('0 0 * * *') // Se ejecuta todos los días a medianoche
+async syncMovies() {
+  console.log('Sincronizando películas desde la API de Star Wars...');
+
+  try {
+    const response = await axios.get('https://swapi.dev/api/films/');
+    const movies = response.data.results;
+
+    for (const movieData of movies) {
+      const movie = new Movie();
+      movie.id = movieData.episode_id;
+      movie.title = movieData.title;
+      movie.description = movieData.opening_crawl;
+      movie.releaseDate = movieData.release_date;
+      movie.director = movieData.director;
+      movie.producer = movieData.producer;
+
+      movie.characters = await this.syncRelatedEntities(this.charactersRepository, movieData.characters);
+      movie.planets = await this.syncRelatedEntities(this.planetsRepository, movieData.planets);
+      movie.starships = await this.syncRelatedEntities(this.starshipsRepository, movieData.starships);
+      movie.vehicles = await this.syncRelatedEntities(this.vehiclesRepository, movieData.vehicles);
+      movie.species = await this.syncRelatedEntities(this.speciesRepository, movieData.species);
+
+      try {
+        const existingMovie = await this.moviesRepository.findOne({
+          where: { id: movie.id },
+          relations: ['characters', 'planets', 'starships', 'vehicles', 'species'],
+        });
+
+        if (existingMovie) {
+          console.log(`Actualizando película: ${movie.title}`);
+          await this.moviesRepository.save({ ...existingMovie, ...movie });
+        } else {
+          console.log(`Guardando nueva película: ${movie.title}`);
+          await this.moviesRepository.save(movie);
+        }
+      } catch (dbError) {
+        console.error(`Error guardando la película ${movie.title}:`, dbError.message);
+      }
+    }
+
+    console.log('Películas sincronizadas correctamente.');
+  } catch (error) {
+    console.error('Error sincronizando películas:', error.message);
+  }
+}
+
+  
   
 }
 

@@ -163,7 +163,7 @@ export class MoviesService {
       throw new NotFoundException(`Movie with ID ${id} not found`);
     }
   
-    return movie.starships;
+    return movie.planets;
   }
   async getVehicleByMovie(id: number): Promise<Vehicle[]> {
     const movie = await this.moviesRepository.findOne({
@@ -175,7 +175,7 @@ export class MoviesService {
       throw new NotFoundException(`Movie with ID ${id} not found`);
     }
   
-    return movie.starships;
+    return movie.vehicles;
   }
   async getSpeciesByMovie(id: number): Promise<Species[]> {
     const movie = await this.moviesRepository.findOne({
@@ -187,7 +187,7 @@ export class MoviesService {
       throw new NotFoundException(`Movie with ID ${id} not found`);
     }
   
-    return movie.starships;
+    return movie.species;
   }
   
   
