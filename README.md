@@ -238,7 +238,6 @@ PUT /movies/:id
 ```
 DELETE /movies/:id
 ```
-
 ## 🎥 **Favoritos**
 
 📌 **Agregar una película a favoritos:**
@@ -257,6 +256,62 @@ DELETE /movies/favorites/:movieId
 
 ```
 GET /movies/user/favorites
+```
+
+###  Obtener personajes de una película
+**GET /movies/:id/characters**
+
+ **Descripción:**  
+Devuelve todos los personajes que aparecen en una película específica.
+
+ **Ejemplo de solicitud:**
+```sh
+GET http://localhost:3000/movies/1/characters
+
+```
+###  Obtener las naves de una película
+**GET /movies/:id/starships**
+
+ **Descripción:**  
+Devuelve todas las naves que aparecen en una película específica.
+
+ **Ejemplo de solicitud:**
+```sh
+GET http://localhost:3000/movies/1/starships
+
+```
+###  Obtener planetas de una película
+**GET /movies/:id/planets**
+
+ **Descripción:**  
+Devuelve todos los planetas que aparecen en una película específica.
+
+ **Ejemplo de solicitud:**
+```sh
+GET http://localhost:3000/movies/1/planets
+
+```
+###  Obtener vehículos de una película
+**GET /movies/:id/vehicles**
+
+ **Descripción:**  
+Devuelve todos los vehículos que aparecen en una película específica.
+
+ **Ejemplo de solicitud:**
+```sh
+GET http://localhost:3000/movies/1/vehicles
+
+```
+###  Obtener especies de una película
+**GET /movies/:id/species**
+
+ **Descripción:**  
+Devuelve todas las especies que aparecen en una película específica.
+
+ **Ejemplo de solicitud:**
+```sh
+GET http://localhost:3000/movies/1/species
+
 ```
 
 ## 👥 **Gestión de Usuarios**

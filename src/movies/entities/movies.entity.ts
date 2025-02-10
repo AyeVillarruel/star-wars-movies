@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { UserMovie } from './user_movies.entity';
 import { Planet } from './planet.entity';
-import { Character } from './character.entity';
+import { Characters } from './character.entity';
 import { Starship } from './starship.entity';
 import { Vehicle } from './vehicle.entity';
 import { Species } from './Species.entity';
@@ -31,10 +31,10 @@ export class Movie {
   @Column({ nullable: true })
   @ApiProperty({ description: 'movie producer', example: 'Star Wars' })
   producer: string;
-  
-  @ManyToMany(() => Character, (character) => character.movies, { cascade: true })
+
+  @ManyToMany(() => Characters, (character) => character.movies, { cascade: true })
   @JoinTable()
-  characters: Character[];
+  characters: Characters[];
 
   @ManyToMany(() => Planet, (planet) => planet.movies, { cascade: true })
   @JoinTable()

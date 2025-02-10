@@ -7,6 +7,11 @@ import { UpdateMovieDto } from '../dto/update-movie.dto';
 import { FavoriteMovieDto } from '../dto/favorite-movie.dto';
 import { UserMovie } from '../entities/user_movies.entity';
 import { User } from '../../users/users.entity';
+import { Starship } from '../entities/starship.entity';
+import { Characters } from '../entities/character.entity';
+import { Planet } from '../entities/planet.entity';
+import { Vehicle } from '../entities/vehicle.entity';
+import { Species } from '../entities/Species.entity';
 
 @Injectable()
 export class MoviesService {
@@ -121,6 +126,71 @@ export class MoviesService {
       relations: ['movie'],
     });
   }
+
+  async getCharactersByMovie(id: number): Promise<Characters[]> {
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['characters'], 
+    });
+  
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+  
+    return movie.characters;
+  }
+
+  async getStarshipsByMovie(id: number): Promise<Starship[]> {
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['starships'], 
+    });
+  
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+  
+    return movie.starships;
+  }
+
+  async getPlanetsByMovie(id: number): Promise<Planet[]> {
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['planets'], 
+    });
+  
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+  
+    return movie.starships;
+  }
+  async getVehicleByMovie(id: number): Promise<Vehicle[]> {
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['vehicles'], 
+    });
+  
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+  
+    return movie.starships;
+  }
+  async getSpeciesByMovie(id: number): Promise<Species[]> {
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['species'], 
+    });
+  
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+  
+    return movie.starships;
+  }
+  
+  
   
 }
  

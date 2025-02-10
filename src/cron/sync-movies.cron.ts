@@ -3,18 +3,19 @@ import { Cron } from '@nestjs/schedule';
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Movie } from '../movies/entities/movies.entity';
-import { Character } from '../movies/entities/character.entity';
+import { Characters } from '../movies/entities/character.entity';
 import { Planet } from '../movies/entities/planet.entity';
 import { Starship } from '../movies/entities/starship.entity';
 import { Vehicle } from '../movies/entities/vehicle.entity';
 import { Species } from '../movies/entities/Species.entity';
 import axios from 'axios';
+import { response } from 'express';
 
 @Injectable()
 export class SyncMoviesCron implements OnModuleInit {
   constructor(
     @InjectRepository(Movie) private readonly moviesRepository: Repository<Movie>,
-    @InjectRepository(Character) private readonly charactersRepository: Repository<Character>,
+    @InjectRepository(Characters) private readonly charactersRepository: Repository<Characters>,
     @InjectRepository(Planet) private readonly planetsRepository: Repository<Planet>,
     @InjectRepository(Starship) private readonly starshipsRepository: Repository<Starship>,
     @InjectRepository(Vehicle) private readonly vehiclesRepository: Repository<Vehicle>,
@@ -74,9 +75,16 @@ export class SyncMoviesCron implements OnModuleInit {
       let existingEntity = await repository.findOne({ where: { url } as FindOptionsWhere<T> });
   
       if (!existingEntity) {
-        const entityName = url.split('/').slice(-2, -1)[0]; // Obtiene el nombre de la URL
-        existingEntity = repository.create({ name: entityName, url } as DeepPartial<T>);
-        await repository.save(existingEntity);
+        try {
+          const response = await axios.get(url);
+          const entityName = response.data.name;
+          existingEntity = repository.create({ name: entityName, url } as DeepPartial<T>);
+          await repository.save(existingEntity);
+        }
+        catch (error) {
+          console.error(`Error al obtener los datos de  ${url}:`, error.message);
+          continue;
+        }
       }
   
       entities.push(existingEntity);

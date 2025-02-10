@@ -10,6 +10,11 @@ import { UpdateMovieDto } from '../dto/update-movie.dto';
 import { FavoriteMovieDto } from '../dto/favorite-movie.dto';
 import { CustomRolesGuard } from '../../auth/guards/custom-roles.guard';
 import { CustomJwtAuthGuard } from '../../auth/guards/custom-jwt.guard';
+import { Characters } from '../entities/character.entity';
+import { Starship } from '../entities/starship.entity';
+import { Planet } from '../entities/planet.entity';
+import { Vehicle } from '../entities/vehicle.entity';
+import { Species } from '../entities/Species.entity';
 
 @ApiTags('movies')
 @ApiBearerAuth()
@@ -53,6 +58,55 @@ async getUserFavorites(@Request() req) {
     return this.moviesService.getUserFavorites(req.user.id);
 }
 
+
+    @Get(':id/characters')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Get all characters in a movie' })
+    @Roles('ADMIN', 'REGULAR')
+    @ApiResponse({ status: 200, description: 'List of characters in the movie' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    async getCharactersByMovie(@Param('id', ParseIntPipe) id: number): Promise<Characters[]> {
+      return this.moviesService.getCharactersByMovie(id);
+    }
+
+    @Get(':id/starships')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Get all starships in a movie' })
+    @Roles('ADMIN', 'REGULAR')
+    @ApiResponse({ status: 200, description: 'List of starships in the movie' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    async getStarshipsByMovie(@Param('id', ParseIntPipe) id: number): Promise<Starship[]> {
+      return this.moviesService.getStarshipsByMovie(id);
+    }
+
+    @Get(':id/planets')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Get all planets in a movie' })
+    @Roles('ADMIN', 'REGULAR')
+    @ApiResponse({ status: 200, description: 'List of planets in the movie' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    async getPlanetsByMovie(@Param('id', ParseIntPipe) id: number): Promise<Planet[]> {
+      return this.moviesService.getPlanetsByMovie(id);
+    }
+    @Get(':id/vehicles')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Get all vehicles in a movie' })
+    @Roles('ADMIN', 'REGULAR')
+    @ApiResponse({ status: 200, description: 'List of vehicles in the movie' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    async getVehivulesByMovie(@Param('id', ParseIntPipe) id: number): Promise<Vehicle[]> {
+      return this.moviesService.getVehicleByMovie(id);
+    }
+    @Get(':id/species')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiOperation({ summary: 'Get all species in a movie' })
+    @Roles('ADMIN', 'REGULAR')
+    @ApiResponse({ status: 200, description: 'List of species in the movie' })
+    @ApiResponse({ status: 404, description: 'Movie not found' })
+    async getSpeciesByMovie(@Param('id', ParseIntPipe) id: number): Promise<Species[]> {
+      return this.moviesService.getSpeciesByMovie(id);
+    }
+
   @Post()
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles('ADMIN')
@@ -64,6 +118,7 @@ async getUserFavorites(@Request() req) {
     return this.moviesService.create(createMovieDto);
   }
 
+  
   @Post('favorite')
   @ApiOperation({ summary: 'Add a movie to favorites' })
   @UseGuards(JwtAuthGuard, RolesGuard)
