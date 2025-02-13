@@ -94,7 +94,7 @@ async getUserFavorites(@Request() req) {
     @Roles('ADMIN', 'REGULAR')
     @ApiResponse({ status: 200, description: 'List of vehicles in the movie' })
     @ApiResponse({ status: 404, description: 'Movie not found' })
-    async getVehivulesByMovie(@Param('id', ParseIntPipe) id: number): Promise<Vehicle[]> {
+    async getVehiclesByMovie(@Param('id', ParseIntPipe) id: number): Promise<Vehicle[]> {
       return this.moviesService.getVehicleByMovie(id);
     }
     @Get(':id/species')
@@ -135,18 +135,18 @@ async getUserFavorites(@Request() req) {
   @ApiOperation({ summary: 'Update a movie by ID - ONLY ADMIN' })
   @ApiResponse({ status: 200, description: 'The movie has been successfully updated.' })
   @ApiResponse({ status: 403, description: 'Access denied. You do not have the required role.' })
-@ApiResponse({ status: 401, description: 'You are not authorized. Please log in.' })
+  @ApiResponse({ status: 401, description: 'You are not authorized. Please log in.' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN') 
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMovieDto: UpdateMovieDto
   ): Promise<Movie> {
-    const updatedMovie = await this.moviesService.update(id, updateMovieDto);
-    if (!updatedMovie) {
+    const movie = await this.moviesService.findById(id);
+    if (!movie) {
       throw new NotFoundException(`Movie with ID ${id} not found`);
     }
-    return updatedMovie;
+    return this.moviesService.update(id, updateMovieDto);
   } 
   
 @Delete(':id')
@@ -177,6 +177,5 @@ async delete(@Param('id', ParseIntPipe) id: number): Promise<{ message: string }
 async removeFavorite(@Request() req, @Param('movieId', ParseIntPipe) movieId: number) {
   return this.moviesService.removeFavorite({ userId: req.user.id, movieId });
 }
-
   
 }

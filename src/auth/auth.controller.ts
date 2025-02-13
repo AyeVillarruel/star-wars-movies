@@ -22,7 +22,7 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   @ApiOAuth2([])
-  @ApiOperation({ summary: 'Redirigir a Google para autenticación' })
+  @ApiOperation({ summary: 'Redirigir a Google para autenticación', description: 'Este endpoint solo es accesible desde un navegador.' })
   async googleAuth() { return { message: 'Redirecting to Google OAuth...' };}
 
   @Get('google/callback')
